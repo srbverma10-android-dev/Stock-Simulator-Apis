@@ -15,13 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from reportdev.views import showTempDataDev
+from reportdev.views import SaveReport
 from reportprod.views import showTempDataProd
 
-TEST = 'test/'
+TEST = 'dev/'
+PROD = 'production/'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(TEST+'report', showTempDataDev),
-    path('report', showTempDataProd)
+    path(TEST+'report', SaveReport, name='SaveReport'),
+    path(PROD+'report', showTempDataProd)
 ]

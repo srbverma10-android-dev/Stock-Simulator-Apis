@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import ReportDevModel
 
-# Register your models here.
+
+@admin.register(ReportDevModel)
+class ReportDevAdmin(admin.ModelAdmin):
+    list_display = ['id', 'email', 'secondParam']
