@@ -8,4 +8,4 @@ class ReportDevModel(models.Model):
     logCsvFile = models.CharField(max_length=10000)
 
     class Meta:
-        db_table = "ReportDevDbTable"
+        db_table = "Report"
