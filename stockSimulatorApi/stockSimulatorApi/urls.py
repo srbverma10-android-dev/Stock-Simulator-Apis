@@ -21,7 +21,7 @@ from reportprod.views import showTempDataProd
 
 from . import settings
 TEST = 'dev/'
-PROD = 'production/'
+PROD = 'v1/'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
