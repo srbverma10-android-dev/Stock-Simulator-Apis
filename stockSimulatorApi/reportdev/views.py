@@ -1,14 +1,19 @@
+import json
+from collections import namedtuple
+
+from django.core.files.storage import FileSystemStorage
+from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.core.files.storage import FileSystemStorage
 
 from .models import ReportDevModel, Build
 
-from django.core.mail import send_mail
-
-
 fs = FileSystemStorage()
+
+
+def customBuildDecoder(build):
+    return namedtuple('X', build.keys())(*build.values())
 
 
 @api_view(['POST'])
@@ -17,7 +22,7 @@ def SaveReport(request):
         email = request.POST['email']
         typeForContext = request.POST['type']
         secondParam = request.POST['secondParam']
-        buildName = request.POST['buildName']
+        buildJson = request.POST['build']
         screenShotFile = request.FILES['screenShot']
         logCsvFile = request.FILES['logCsvFile']
         urlScreenShot = ''
@@ -29,10 +34,10 @@ def SaveReport(request):
             nameLogCsvFile = fs.save(logCsvFile.name, logCsvFile)
             urlLogCsv = fs.url(nameLogCsvFile)
 
-            build = Build(buildName=buildName)
-            build.full_clean()
+            buildObj = json.loads(buildJson, object_hook=customBuildDecoder)
+            print('buildName:- ' + buildObj.buildName)
+            build = Build(buildName=buildObj.buildName)
             build.save()
-
             ins = ReportDevModel(email=email, type=typeForContext, secondParam=secondParam,
                                  screenShot=urlScreenShot, logCsvFile=urlLogCsv, build=build)
             ins.full_clean()
