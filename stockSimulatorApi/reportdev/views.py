@@ -12,6 +12,7 @@ fs = FileSystemStorage()
 def SaveReport(request):
     if request.method == "POST":
         email = request.POST['email']
+        type = request.POST['type']
         secondParam = request.POST['secondParam']
         screenShotFile = request.FILES['screenShot']
         logCsvFile = request.FILES['logCsvFile']
@@ -24,7 +25,8 @@ def SaveReport(request):
             nameLogCsvFile = fs.save(logCsvFile.name, logCsvFile)
             urlLogCsv = fs.url(nameLogCsvFile)
 
-            ins = ReportDevModel(email=email, secondParam=secondParam, screenShot=urlScreenShot, logCsvFile=urlLogCsv)
+            ins = ReportDevModel(email=email, type=type, secondParam=secondParam,
+                                 screenShot=urlScreenShot, logCsvFile=urlLogCsv)
             ins.full_clean()
             ins.save()
 
@@ -32,6 +34,7 @@ def SaveReport(request):
             context = {
                 'data': {
                     'email': email,
+                    'type': type,
                     'secondParam': secondParam,
                     'screenShot': urlScreenShot,
                     'logCsvFile': urlLogCsv,
@@ -43,6 +46,7 @@ def SaveReport(request):
             context = {
                 'data': {
                     'email': email,
+                    'type': type,
                     'secondParam': secondParam,
                     'screenShot': urlScreenShot,
                     'logCsvFile': urlLogCsv,
