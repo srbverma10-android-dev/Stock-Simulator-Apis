@@ -139,11 +139,29 @@ CSRF_COOKIE_SECURE = True
 SECURE_SSL_REDIRECT = False
 
 AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 SESSION_SAVE_EVERY_REQUEST = True
+
 SESSION_COOKIE_AGE = 86400  # sec
+
 SESSION_COOKIE_DOMAIN = None
+
 SESSION_COOKIE_NAME = 'DSESSIONID'
+
 SESSION_COOKIE_SECURE = False
 
 STATIC_ROOT = ''
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST_USER = 'srbverma10@gmail.com'
+
+EMAIL_HOST = 'smtp.gmail.com'
+
+EMAIL_PORT = 587
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_PASSWORD = "Znqgfxs10NY@"

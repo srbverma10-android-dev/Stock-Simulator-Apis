@@ -5,6 +5,9 @@ from django.core.files.storage import FileSystemStorage
 
 from .models import ReportDevModel
 
+from django.core.mail import send_mail
+
+
 fs = FileSystemStorage()
 
 
@@ -12,7 +15,7 @@ fs = FileSystemStorage()
 def SaveReport(request):
     if request.method == "POST":
         email = request.POST['email']
-        type = request.POST['type']
+        typeForContext = request.POST['type']
         secondParam = request.POST['secondParam']
         screenShotFile = request.FILES['screenShot']
         logCsvFile = request.FILES['logCsvFile']
@@ -25,16 +28,23 @@ def SaveReport(request):
             nameLogCsvFile = fs.save(logCsvFile.name, logCsvFile)
             urlLogCsv = fs.url(nameLogCsvFile)
 
-            ins = ReportDevModel(email=email, type=type, secondParam=secondParam,
+            ins = ReportDevModel(email=email, type=typeForContext, secondParam=secondParam,
                                  screenShot=urlScreenShot, logCsvFile=urlLogCsv)
             ins.full_clean()
             ins.save()
+            send_mail(
+                'Subject here',
+                'Here is the message.',
+                'srbverma10@gmail.com',
+                [email],
+                fail_silently=False,
+            )
 
         if urlScreenShot != '' and urlScreenShot != '':
             context = {
                 'data': {
                     'email': email,
-                    'type': type,
+                    'type': typeForContext,
                     'secondParam': secondParam,
                     'screenShot': urlScreenShot,
                     'logCsvFile': urlLogCsv,
