@@ -3,7 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.core.files.storage import FileSystemStorage
 
-from .models import ReportDevModel
+from .models import ReportDevModel, Build
 
 from django.core.mail import send_mail
 
@@ -17,6 +17,7 @@ def SaveReport(request):
         email = request.POST['email']
         typeForContext = request.POST['type']
         secondParam = request.POST['secondParam']
+        buildName = request.POST['buildName']
         screenShotFile = request.FILES['screenShot']
         logCsvFile = request.FILES['logCsvFile']
         urlScreenShot = ''
@@ -28,8 +29,12 @@ def SaveReport(request):
             nameLogCsvFile = fs.save(logCsvFile.name, logCsvFile)
             urlLogCsv = fs.url(nameLogCsvFile)
 
+            build = Build(buildName=buildName)
+            build.full_clean()
+            build.save()
+
             ins = ReportDevModel(email=email, type=typeForContext, secondParam=secondParam,
-                                 screenShot=urlScreenShot, logCsvFile=urlLogCsv)
+                                 screenShot=urlScreenShot, logCsvFile=urlLogCsv, build=build)
             ins.full_clean()
             ins.save()
             send_mail(
