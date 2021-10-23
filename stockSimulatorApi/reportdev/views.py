@@ -23,40 +23,44 @@ def SaveReport(request):
         typeForContext = request.POST['type']
         secondParam = request.POST['secondParam']
         buildJson = request.POST['build']
-        screenShotFile = request.FILES['screenShot']
         logCsvFile = request.FILES['logCsvFile']
-        urlScreenShot = ''
         urlLogCsv = ''
-        if screenShotFile.content_type == 'image/png' and logCsvFile.content_type == 'text/csv':
-            nameScreenShot = fs.save(screenShotFile.name, screenShotFile)
-            urlScreenShot = fs.url(nameScreenShot)
+        listOfUrls = []
 
+        for f in request.FILES.getlist('screenShot'):
+            print(f.name)
+            if f.content_type == 'image/png':
+                nameScreenShot = fs.save(f.name, f)
+                urlScreenShot = fs.url(nameScreenShot)
+                listOfUrls.append(urlScreenShot)
+
+        if logCsvFile.content_type == 'text/csv':
             nameLogCsvFile = fs.save(logCsvFile.name, logCsvFile)
             urlLogCsv = fs.url(nameLogCsvFile)
 
-            buildObj = json.loads(buildJson, object_hook=customBuildDecoder)
-            print('buildName:- ' + buildObj.buildName)
-            build = Build(buildName=buildObj.buildName)
-            build.save()
-            ins = ReportDevModel(email=email, type=typeForContext, secondParam=secondParam,
-                                 screenShot=urlScreenShot, logCsvFile=urlLogCsv, build=build)
-            ins.full_clean()
-            ins.save()
-            send_mail(
-                'Subject here',
-                'Here is the message.',
-                'srbverma10@gmail.com',
-                [email],
-                fail_silently=False,
-            )
+        buildObj = json.loads(buildJson, object_hook=customBuildDecoder)
+        print('buildName:- ' + buildObj.buildName)
+        build = Build(buildName=buildObj.buildName)
+        build.save()
+        ins = ReportDevModel(email=email, type=typeForContext, secondParam=secondParam,
+                             screenShot=listOfUrls, logCsvFile=urlLogCsv, build=build)
+        ins.full_clean()
+        ins.save()
+        send_mail(
+            'Subject here',
+            'Here is the message.',
+            'srbverma10@gmail.com',
+            [email],
+            fail_silently=False,
+        )
 
-        if urlScreenShot != '' and urlScreenShot != '':
+        if listOfUrls != '' and urlLogCsv != '':
             context = {
                 'data': {
                     'email': email,
                     'type': typeForContext,
                     'secondParam': secondParam,
-                    'screenShot': urlScreenShot,
+                    'screenShot': listOfUrls,
                     'logCsvFile': urlLogCsv,
                 },
                 'hasNext': False,
@@ -68,7 +72,7 @@ def SaveReport(request):
                     'email': email,
                     'type': type,
                     'secondParam': secondParam,
-                    'screenShot': urlScreenShot,
+                    'screenShot': listOfUrls,
                     'logCsvFile': urlLogCsv,
                 },
                 'hasNext': False,
