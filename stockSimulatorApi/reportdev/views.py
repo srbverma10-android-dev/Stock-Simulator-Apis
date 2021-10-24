@@ -47,7 +47,6 @@ def SaveReport(request):
                              secondParam=removeDoubleQuotes(secondParam),
                              screenShot=listOfUrls, logCsvFile=removeDoubleQuotes(urlLogCsv), build=build)
         ins.save()
-
         send_mail(
             'Subject here',
             'Here is the message.',
@@ -55,7 +54,6 @@ def SaveReport(request):
             [removeDoubleQuotes(email)],
             fail_silently=False,
         )
-
         if listOfUrls != '' and urlLogCsv != '':
             context = {
                 'data': {
@@ -64,7 +62,7 @@ def SaveReport(request):
                     'secondParam': secondParam,
                     'screenShot': listOfUrls,
                     'logCsvFile': urlLogCsv,
-                    'build': build
+                    'build': temp2
                 },
                 'hasNext': False,
                 'code': status.HTTP_201_CREATED
@@ -77,7 +75,7 @@ def SaveReport(request):
                     'secondParam': secondParam,
                     'screenShot': listOfUrls,
                     'logCsvFile': urlLogCsv,
-                    'build': build
+                    'build': temp2
                 },
                 'hasNext': False,
                 'code': status.HTTP_412_PRECONDITION_FAILED
