@@ -45,7 +45,7 @@ def SaveReport(request):
 
         ins = ReportDevModel(email=removeDoubleQuotes(email), type=removeDoubleQuotes(typeForContext),
                              secondParam=removeDoubleQuotes(secondParam),
-                             screenShot=listOfUrls, logCsvFile=removeDoubleQuotes(urlLogCsv), build=build)
+                             screenShot=listOfUrls, logCsvFile=urlLogCsv, build=build)
         ins.save()
         send_mail(
             'Subject here',
