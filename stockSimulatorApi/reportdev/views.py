@@ -1,6 +1,4 @@
-import json
-from collections import namedtuple
-
+import simplejson as json
 from django.core.files.storage import FileSystemStorage
 from django.core.mail import send_mail
 from rest_framework import status
@@ -12,23 +10,26 @@ from .models import ReportDevModel, Build
 fs = FileSystemStorage()
 
 
-def customBuildDecoder(build):
-    return namedtuple('X', build.keys())(*build.values())
+def removeDoubleQuotes(string):
+    return string[1:(len(string)-1)]
 
 
 @api_view(['POST'])
 def SaveReport(request):
     if request.method == "POST":
-        email = request.POST['email']
-        typeForContext = request.POST['type']
-        secondParam = request.POST['secondParam']
-        buildJson = request.POST['build']
+        email = request.POST.get('email')
+        typeForContext = request.POST.get('type')
+        secondParam = request.POST.get('secondParam')
+        build = request.POST['build']
         logCsvFile = request.FILES['logCsvFile']
+
+        temp = json.loads(build)
+        buildJson = json.dumps(temp['nameValuePairs'])
+
         urlLogCsv = ''
         listOfUrls = []
 
         for f in request.FILES.getlist('screenShot'):
-            print(f.name)
             if f.content_type == 'image/png':
                 nameScreenShot = fs.save(f.name, f)
                 urlScreenShot = fs.url(nameScreenShot)
@@ -38,19 +39,20 @@ def SaveReport(request):
             nameLogCsvFile = fs.save(logCsvFile.name, logCsvFile)
             urlLogCsv = fs.url(nameLogCsvFile)
 
-        buildObj = json.loads(buildJson, object_hook=customBuildDecoder)
-        print('buildName:- ' + buildObj.buildName)
-        build = Build(buildName=buildObj.buildName)
+        temp2 = json.loads(buildJson)
+        build = Build(buildName=temp2['buildName'])
         build.save()
-        ins = ReportDevModel(email=email, type=typeForContext, secondParam=secondParam,
-                             screenShot=listOfUrls, logCsvFile=urlLogCsv, build=build)
-        ins.full_clean()
+
+        ins = ReportDevModel(email=removeDoubleQuotes(email), type=removeDoubleQuotes(typeForContext),
+                             secondParam=removeDoubleQuotes(secondParam),
+                             screenShot=listOfUrls, logCsvFile=removeDoubleQuotes(urlLogCsv), build=build)
         ins.save()
+
         send_mail(
             'Subject here',
             'Here is the message.',
             'srbverma10@gmail.com',
-            [email],
+            [removeDoubleQuotes(email)],
             fail_silently=False,
         )
 
@@ -62,6 +64,7 @@ def SaveReport(request):
                     'secondParam': secondParam,
                     'screenShot': listOfUrls,
                     'logCsvFile': urlLogCsv,
+                    'build': build
                 },
                 'hasNext': False,
                 'code': status.HTTP_201_CREATED
@@ -74,6 +77,7 @@ def SaveReport(request):
                     'secondParam': secondParam,
                     'screenShot': listOfUrls,
                     'logCsvFile': urlLogCsv,
+                    'build': build
                 },
                 'hasNext': False,
                 'code': status.HTTP_412_PRECONDITION_FAILED
