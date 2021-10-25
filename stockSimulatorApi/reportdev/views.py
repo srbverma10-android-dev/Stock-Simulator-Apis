@@ -54,7 +54,13 @@ def SaveReport(request):
             urlLogCsv = fs.url(nameLogCsvFile)
 
         temp2 = json.loads(buildJson)
-        build = Build(buildName=temp2['buildName'])
+        build = Build(brand=temp2['BRAND'],
+                      device=temp2['DEVICE'],
+                      display=temp2['DISPLAY'],
+                      density=temp2['DENSITY'],
+                      sdk=temp2['SDK'],
+                      version_name=temp2['VERSION_NAME'],
+                      version_code=temp2['VERSION_CODE'])
         build.save()
 
         ins = ReportDevModel(email=removeDoubleQuotes(email), type=removeDoubleQuotes(typeForContext),

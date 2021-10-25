@@ -2,7 +2,13 @@ from django.db import models
 
 
 class Build(models.Model):
-    buildName = models.CharField(max_length=100)
+    brand = models.CharField(max_length=100, null=True)
+    device = models.CharField(max_length=100, null=True)
+    display = models.CharField(max_length=100, null=True)
+    density = models.CharField(max_length=100, null=True)
+    sdk = models.CharField(max_length=100, null=True)
+    version_name = models.CharField(max_length=100, null=True)
+    version_code = models.CharField(max_length=100, null=True)
 
     class Meta:
         db_table = "Build"
