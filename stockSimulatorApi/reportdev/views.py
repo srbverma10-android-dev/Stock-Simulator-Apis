@@ -1,10 +1,10 @@
 import simplejson as json
 from django.core.files.storage import FileSystemStorage
-from django.core.mail import send_mail
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from django.core.mail import EmailMultiAlternatives
 from .models import ReportDevModel, Build
 
 fs = FileSystemStorage()
@@ -29,13 +29,27 @@ def SaveReport(request):
         urlLogCsv = ''
         listOfUrls = []
 
+        msg = EmailMultiAlternatives(body="...", from_email="srbverma10@gmail.com",
+                                     to=[removeDoubleQuotes(email)])
+        if removeDoubleQuotes(typeForContext) == "report":
+            msg.subject = "Reported a bug"
+            html_content = "<html><body><h2>We are glad to receive feedback.\n</h2><p>We strive to create a platform that ensures user comfort and proper management and we assure you to look into your report and get back to you as soon as possible.\n</p><b>Report:-</b><a>" + secondParam +"\n</a></body></html> "
+        elif removeDoubleQuotes(typeForContext) == "suggestion":
+            msg.subject = "Suggested an improvement"
+            html_content = "<html><body><h2>We are glad to receive suggestions from you.\n</h2><p>We strive to create a platform that ensures user comfort and proper management and we assure you to look into your suggestion and get back to you as soon as possible.\n</p><b>Suggestions:-</b><a>" + secondParam +"\n</a></body></html> "
+        else:
+            msg.subject = "Asked questions"
+            html_content = "<html><body><h2>We will be glad to answer you.\n</h2><p>We strive to create a platform that ensures user comfort and proper management and we assure you to look into your queries and get back to you as soon as possible.\n</p><b>Query:-</b><a>" + secondParam +"\n</a></body></html> "
+        msg.attach_alternative(html_content, "text/html")
         for f in request.FILES.getlist('screenShot'):
             if f.content_type == 'image/png':
+                msg.attach(f.name, f.read(), f.content_type)
                 nameScreenShot = fs.save(f.name, f)
                 urlScreenShot = fs.url(nameScreenShot)
                 listOfUrls.append(urlScreenShot)
 
         if logCsvFile.content_type == 'text/csv':
+            msg.attach(logCsvFile.name, logCsvFile.read(), logCsvFile.content_type)
             nameLogCsvFile = fs.save(logCsvFile.name, logCsvFile)
             urlLogCsv = fs.url(nameLogCsvFile)
 
@@ -47,13 +61,7 @@ def SaveReport(request):
                              secondParam=removeDoubleQuotes(secondParam),
                              screenShot=listOfUrls, logCsvFile=urlLogCsv, build=build)
         ins.save()
-        send_mail(
-            'Subject here',
-            'Here is the message.',
-            'srbverma10@gmail.com',
-            [removeDoubleQuotes(email)],
-            fail_silently=False,
-        )
+        msg.send(fail_silently=True)
         if listOfUrls != '' and urlLogCsv != '':
             context = {
                 'data': {
