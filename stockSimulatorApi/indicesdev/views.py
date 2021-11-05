@@ -9,13 +9,13 @@ def returnDataOfIndices(request):
     if request.method == "POST":
         symbol = request.POST.get('symbol')
         indData = yahooFinance.Ticker(symbol)
-        # print(indData.history(period="1d", interval="15m"))
         context = {
             'name': indData.info['shortName'],
             'symbol': indData.info['symbol'],
-            'high': indData.info['regularMarketDayHigh'],
-            'low': indData.info['regularMarketDayLow'],
+            'high': indData.info['dayLow'],
+            'low': indData.info['dayHigh'],
             'graphData': indData.history(period="1d", interval="15m"),
+            'current': indData.info['regularMarketPrice'],
             'hasNext': False,
             'code': status.HTTP_412_PRECONDITION_FAILED
         }
