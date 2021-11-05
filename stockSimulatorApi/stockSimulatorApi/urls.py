@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from reportdev.views import SaveReport
 from reportprod.views import showTempDataProd
+from indicesdev.views import returnDataOfIndices
 
 from . import settings
 TEST = 'dev/'
@@ -26,6 +27,7 @@ PROD = 'v1/'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(TEST+'report', SaveReport, name='SaveReport'),
+    path(TEST+'indices', returnDataOfIndices, name='returnDataOfIndices'),
     path(PROD+'report', showTempDataProd)
 ]
 
