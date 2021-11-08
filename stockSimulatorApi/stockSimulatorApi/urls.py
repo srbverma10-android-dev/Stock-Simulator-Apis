@@ -19,6 +19,7 @@ from django.urls import path
 from reportdev.views import SaveReport
 from reportprod.views import showTempDataProd
 from indicesdev.views import returnDataOfIndices
+from bhavcopydev.views import getBhavCopy
 
 from . import settings
 TEST = 'dev/'
@@ -28,6 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path(TEST+'report', SaveReport, name='SaveReport'),
     path(TEST+'indices', returnDataOfIndices, name='returnDataOfIndices'),
+    path(TEST+'bhavcopy', getBhavCopy, name='getBhavCopy'),
     path(PROD+'report', showTempDataProd)
 ]
 
