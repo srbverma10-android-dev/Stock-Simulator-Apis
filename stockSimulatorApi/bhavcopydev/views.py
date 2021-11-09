@@ -6,9 +6,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 
-@api_view(['GET'])
+@api_view(['POST'])
 def getBhavCopy(request):
-    if request.method == "GET":
+    if request.method == "POST":
         i = 0
         did_not_got_data = True
         while did_not_got_data:
