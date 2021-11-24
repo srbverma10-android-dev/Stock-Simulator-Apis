@@ -20,6 +20,7 @@ from reportdev.views import SaveReport
 from reportprod.views import showTempDataProd
 from indicesdev.views import returnDataOfIndices
 from bhavcopydev.views import getBhavCopy
+from detailsdev.views import getDetails
 
 from . import settings
 TEST = 'dev/'
@@ -30,6 +31,7 @@ urlpatterns = [
     path(TEST+'report', SaveReport, name='SaveReport'),
     path(TEST+'indices', returnDataOfIndices, name='returnDataOfIndices'),
     path(TEST+'bhavcopy', getBhavCopy, name='getBhavCopy'),
+    path(TEST+'details', getDetails, name='getDetails'),
     path(PROD+'report', showTempDataProd)
 ]
 
